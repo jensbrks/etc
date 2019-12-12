@@ -1,0 +1,65 @@
+#!/bin/sh
+
+if ! pgrep X > /dev/null; then
+    echo "${0##*/}: X isn't running"
+    exit 1
+fi
+
+DIR=$WM_DIR/maximize
+
+R=$(lsw -r)
+SW=$(wattr w $R)
+SH=$(wattr h $R)
+
+usage() {
+    echo "usage: ${0##*/} (m|f) <wid>" >&2
+    exit 1
+}
+
+toggle_maximize() {
+    wattr $1 || return
+    f=$(find $DIR -name $1)
+
+    if test -n "$f"; then
+        wtp $(cat $f)
+        rm -f $f
+    else
+        wattr xywhi $1 > $DIR/$1
+
+        w=$((SW - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
+        h=$((SH - BAR_HEIGHT - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
+
+        $BAR_TOP \
+            && wtp $WM_GAPSIZE $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $1 \
+            || wtp $WM_GAPSIZE $WM_GAPSIZE $w $h $1
+    fi
+}
+
+toggle_fullscreen() {
+    wattr $1 || return
+    f=$(find $DIR -name $1)
+
+    if test -n "$f"; then
+        wtp $(cat $f)
+        rm -f $f
+    else
+        wattr xywhi $1 > $DIR/$1
+        wtp -$WM_BORDERSIZE -$WM_BORDERSIZE $SW $SH $1
+    fi
+}
+
+setup() {
+    test -d $DIR || mkdir -p $DIR
+
+    for f in $(find $DIR -type f); do
+        wattr ${f##*/} || rm -f $f
+    done
+}
+
+setup
+
+case $* in
+    m\ 0x*) toggle_maximize $2   ;;
+    f\ 0x*) toggle_fullscreen $2 ;;
+    *)      usage                ;;
+esac

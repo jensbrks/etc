@@ -1,0 +1,76 @@
+#!/bin/sh
+
+if ! pgrep X > /dev/null; then
+    echo "${0##*/}: X isn't running"
+    exit 1
+fi
+
+PFW=$(pfw 2> /dev/null)
+
+usage() {
+    echo "usage: ${0##*/} (n|p|u|<wid>)" >&2
+    exit 1
+}
+
+focus() {
+    wattr "$1" || return
+    test "$(wattr xywh $1)" = "$(wattr xywh $(lsw -r))" && return
+
+    chwb -s $WM_BORDERSIZE -c $WM_BORDER_INACTIVE "$PFW"
+    chwb -s $WM_BORDERSIZE -c $WM_BORDER_ACTIVE $1
+
+    chwso -r $1
+    mapw -m $1
+    wtf $1
+}
+
+focus_next() {
+    w=$(lsw | sort | grep -A 1 -F "$PFW")
+
+    if test "$w" = "$PFW"; then
+        w=$(lsw | sort | sed 1q)
+    else
+        w=${w##*
+}
+    fi
+
+    focus "$w"
+}
+
+focus_prev() {
+    w=$(lsw | sort | grep -B 1 -F "$PFW")
+
+    if test "$w" = "$PFW"; then
+        w=$(lsw | sort | sed '$!d')
+    else
+        w=${w%%
+*}
+    fi
+
+    focus "$w"
+}
+
+focus_under() {
+    p=$(wmp)
+
+    for w in $(lsw | tac); do
+        o=$(wattr xy $w)
+        test "${o% *}" -gt "${p% *}" \
+            || test "${o#* }" -gt "${p#* }" && continue
+
+        d=$(wattr wh $w)
+        test "$((${o% *} + ${d% *}))" -lt "${p% *}" \
+            || test "$((${o#* } + ${d#* }))" -lt "${p#* }" && continue
+
+        focus "$w"
+        break
+    done
+}
+
+case $* in
+    n)   focus_next  ;;
+    p)   focus_prev  ;;
+    u)   focus_under ;;
+    0x*) focus $1    ;;
+    *)   usage       ;;
+esac
