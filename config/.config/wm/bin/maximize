@@ -20,32 +20,38 @@ toggle_maximize() {
     wattr $1 || return
     f=$(find $DIR -name $1)
 
-    if test -n "$f"; then
-        wtp $(cat $f)
-        rm -f $f
-    else
-        wattr xywhi $1 > $DIR/$1
+    case $f in
+        '')
+            wattr xywhi $1 > $DIR/$1
 
-        w=$((SW - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
-        h=$((SH - BAR_HEIGHT - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
+            w=$((SW - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
+            h=$((SH - BAR_HEIGHT - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
 
-        $BAR_TOP \
-            && wtp $WM_GAPSIZE $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $1 \
-            || wtp $WM_GAPSIZE $WM_GAPSIZE $w $h $1
-    fi
+            $BAR_TOP \
+                && wtp $WM_GAPSIZE $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $1 \
+                || wtp $WM_GAPSIZE $WM_GAPSIZE $w $h $1
+            ;;
+        *)
+            wtp $(cat $f)
+            rm -f $f
+            ;;
+    esac
 }
 
 toggle_fullscreen() {
     wattr $1 || return
     f=$(find $DIR -name $1)
 
-    if test -n "$f"; then
-        wtp $(cat $f)
-        rm -f $f
-    else
-        wattr xywhi $1 > $DIR/$1
-        wtp -$WM_BORDERSIZE -$WM_BORDERSIZE $SW $SH $1
-    fi
+    case $f in
+        '')
+            wattr xywhi $1 > $DIR/$1
+            wtp -$WM_BORDERSIZE -$WM_BORDERSIZE $SW $SH $1
+            ;;
+        *)
+            wtp $(cat $f)
+            rm -f $f
+            ;;
+    esac
 }
 
 setup() {

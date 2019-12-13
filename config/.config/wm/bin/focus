@@ -27,12 +27,15 @@ focus() {
 focus_next() {
     w=$(lsw | sort | grep -A 1 -F "$PFW")
 
-    if test "$w" = "$PFW"; then
-        w=$(lsw | sort | sed 1q)
-    else
-        w=${w##*
+    case $w in
+        $PFW)
+            w=$(lsw | sort | sed 1q)
+            ;;
+        *)
+            w=${w##*
 }
-    fi
+            ;;
+    esac
 
     focus "$w"
 }
@@ -40,12 +43,15 @@ focus_next() {
 focus_prev() {
     w=$(lsw | sort | grep -B 1 -F "$PFW")
 
-    if test "$w" = "$PFW"; then
-        w=$(lsw | sort | sed '$!d')
-    else
-        w=${w%%
+    case $w in
+        $PFW)
+            w=$(lsw | sort | sed '$!d')
+            ;;
+        *)
+            w=${w%%
 *}
-    fi
+            ;;
+    esac
 
     focus "$w"
 }
