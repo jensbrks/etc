@@ -2,7 +2,14 @@
 
 wew | while read e w a; do
     case $e in
-        BUTTON_PRESS|MAP) wattr o $w || focus $w ;;
-        UNMAP) wattr "$(pfw 2> /dev/null)" || focus p ;;
+        MAP)
+            if ! wattr o $w; then
+                focus $w
+                workspace s $w $(workspace c)
+            fi
+            ;;
+        UNMAP)
+            wattr "$(pfw 2> /dev/null)" || focus p
+            ;;
     esac
 done

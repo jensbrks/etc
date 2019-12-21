@@ -1,0 +1,58 @@
+#!/bin/sh
+
+if ! pgrep X > /dev/null; then
+    echo "${0##*/}: X isn't running"
+    exit 1
+fi
+
+DIR=$WM_DIR/workspace
+
+usage() {
+    cat <<- EOF >&2
+usage: ${0##*/} c
+       ${0##*/} g <wsid>
+       ${0##*/} s <wid> <wsid>
+EOF
+    exit 1
+}
+
+go_to_workspace() {
+    for f in $(find $DIR/$WS -type f); do
+        mapw -u ${f##*/}
+    done
+
+    for f in $(find $DIR/$1 -type f); do
+        mapw -m ${f##*/}
+    done
+
+    echo $1 > $DIR/current
+}
+
+send_to_workspace() {
+    wattr $1 || return
+    test $2 != $WS && mapw -u $1
+    rm -f $DIR/$WS/$1
+    true > $DIR/$2/$1
+}
+
+setup() {
+    for ws in $(seq $WM_WORKSPACES); do
+        mkdir -p $DIR/$ws
+    done
+
+    for f in $(find $DIR -type f ! -name current); do
+        wattr ${f##*/} || rm -f $f
+    done
+
+    test -f $DIR/current || echo 1 > $DIR/current
+    WS=$(cat $DIR/current)
+}
+
+setup
+
+case $* in
+    c)              echo $WS                ;;
+    g\ [0-9]*)      go_to_workspace $2      ;;
+    s\ 0x*\ [0-9]*) send_to_workspace $2 $3 ;;
+    *)              usage                   ;;
+esac
