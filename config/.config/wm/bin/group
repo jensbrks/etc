@@ -9,10 +9,10 @@ DIR=$WM_DIR/group
 
 usage() {
     cat << EOF >&2
-usage: ${0##*/} l [<gid>]
-       ${0##*/} f <wid>
-       ${0##*/} (a|r|t) <wid> <gid>
-       ${0##*/} (s|h|t) <gid>
+usage: ${0##*/} l [GID]
+       ${0##*/} f WID
+       ${0##*/} (a|r|t) WID GID
+       ${0##*/} (s|h|t) GID
 EOF
     exit 1
 }

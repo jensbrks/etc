@@ -11,9 +11,9 @@ SH=$(($(wattr h $R) - BAR_HEIGHT))
 
 usage() {
     cat << EOF >&2
-usage: ${0##*/} c <wid>
-       ${0##*/} (t|l|r|b) <wid>
-       ${0##*/} (tl|tr|bl|br) <wid>
+usage: ${0##*/} c WID
+       ${0##*/} (t|l|r|b) WID
+       ${0##*/} (tl|tr|bl|br) WID
 EOF
     exit 1
 }

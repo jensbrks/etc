@@ -8,7 +8,7 @@ fi
 PFW=$(pfw 2> /dev/null)
 
 usage() {
-    echo "usage: ${0##*/} (n|p|u|<wid>)" >&2
+    echo "usage: ${0##*/} (WID|n|p|u)" >&2
     exit 1
 }
 
@@ -74,9 +74,9 @@ focus_under() {
 }
 
 case $* in
+    0x*) focus $1    ;;
     n)   focus_next  ;;
     p)   focus_prev  ;;
     u)   focus_under ;;
-    0x*) focus $1    ;;
     *)   usage       ;;
 esac

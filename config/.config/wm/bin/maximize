@@ -12,7 +12,7 @@ SW=$(wattr w $R)
 SH=$(wattr h $R)
 
 usage() {
-    echo "usage: ${0##*/} (m|f) <wid>" >&2
+    echo "usage: ${0##*/} (m|f) WID" >&2
     exit 1
 }
 

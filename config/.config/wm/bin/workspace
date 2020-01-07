@@ -10,8 +10,8 @@ DIR=$WM_DIR/workspace
 usage() {
     cat <<- EOF >&2
 usage: ${0##*/} c
-       ${0##*/} g <wsid>
-       ${0##*/} s <wid> <wsid>
+       ${0##*/} g WSID
+       ${0##*/} s WID WSID
 EOF
     exit 1
 }
