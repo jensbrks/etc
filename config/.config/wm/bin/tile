@@ -10,11 +10,7 @@ SW=$(wattr w $R)
 SH=$(($(wattr h $R) - BAR_HEIGHT))
 
 usage() {
-    cat << EOF >&2
-usage: ${0##*/} c WID
-       ${0##*/} (t|l|r|b) WID
-       ${0##*/} (tl|tr|bl|br) WID
-EOF
+    echo "usage: ${0##*/} -ctlrbTLRB WID" >&2
     exit 1
 }
 
@@ -26,7 +22,7 @@ center() {
 
 one_half() {
     case $1 in
-        t)
+        -t)
             w=$((SW - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
             h=$((SH/2 - WM_GAPSIZE - WM_GAPSIZE/2 - WM_BORDERSIZE*2))
 
@@ -34,7 +30,7 @@ one_half() {
                 && wtp $WM_GAPSIZE $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $2 \
                 || wtp $WM_GAPSIZE $WM_GAPSIZE $w $h $2
             ;;
-        b)
+        -b)
             w=$((SW - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
             h=$((SH/2 - WM_GAPSIZE - WM_GAPSIZE/2 - WM_BORDERSIZE*2))
             y=$((SH - h - WM_GAPSIZE - WM_BORDERSIZE*2))
@@ -43,7 +39,7 @@ one_half() {
                 && wtp $WM_GAPSIZE $((y + BAR_HEIGHT)) $w $h $2 \
                 || wtp $WM_GAPSIZE $y $w $h $2
             ;;
-        l)
+        -l)
             w=$((SW/2 - WM_GAPSIZE - WM_GAPSIZE/2 - WM_BORDERSIZE*2))
             h=$((SH - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
 
@@ -51,7 +47,7 @@ one_half() {
                 && wtp $WM_GAPSIZE $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $2 \
                 || wtp $WM_GAPSIZE $WM_GAPSIZE $w $h $2
             ;;
-        r)
+        -r)
             w=$((SW/2 - WM_GAPSIZE - WM_GAPSIZE/2 - WM_BORDERSIZE*2))
             h=$((SH - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
             x=$((SW - w - WM_GAPSIZE - WM_BORDERSIZE*2))
@@ -68,26 +64,26 @@ one_fourth() {
     h=$((SH/2 - WM_GAPSIZE - WM_GAPSIZE/2 - WM_BORDERSIZE*2))
 
     case $1 in
-        tl)
+        -T)
             $BAR_TOP \
                 && wtp $WM_GAPSIZE $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $2 \
                 || wtp $WM_GAPSIZE $WM_GAPSIZE $w $h $2
             ;;
-        tr)
+        -R)
             x=$((SW - w - WM_GAPSIZE - WM_BORDERSIZE*2))
 
             $BAR_TOP \
                 && wtp $x $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $2 \
                 || wtp $x $WM_GAPSIZE $w $h $2
             ;;
-        bl)
+        -L)
             y=$((SH - h - WM_GAPSIZE - WM_BORDERSIZE*2))
 
             $BAR_TOP \
                 && wtp $WM_GAPSIZE $((y + BAR_HEIGHT)) $w $h $2 \
                 || wtp $WM_GAPSIZE $y $w $h $2
             ;;
-        br)
+        -B)
             x=$((SW - w - WM_GAPSIZE - WM_BORDERSIZE*2))
             y=$((SH - h - WM_GAPSIZE - WM_BORDERSIZE*2))
 
@@ -99,8 +95,8 @@ one_fourth() {
 }
 
 case $* in
-    c\ 0x*)        center $2        ;;
-    [tlrb]\ 0x*)   one_half $1 $2   ;;
-    [tb][lr]\ 0x*) one_fourth $1 $2 ;;
-    *)             usage            ;;
+    -c\ 0x*)      center $2        ;;
+    -[tlrb]\ 0x*) one_half $1 $2   ;;
+    -[TLRB]\ 0x*) one_fourth $1 $2 ;;
+    *)            usage            ;;
 esac
