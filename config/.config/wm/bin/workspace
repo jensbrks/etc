@@ -18,11 +18,12 @@ EOF
 
 go_to_workspace() {
     for f in $(find $DIR/$WS -type f); do
+        wattr m ${f##*/}; echo $? > $f
         mapw -u ${f##*/}
     done
 
     for f in $(find $DIR/$1 -type f); do
-        mapw -m ${f##*/}
+        test "$(cat $f)" = 0 && mapw -m ${f##*/}
     done
 
     echo $1 > $DIR/current
