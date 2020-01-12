@@ -9,11 +9,17 @@ DIR=$WM_DIR/workspace
 
 usage() {
     cat <<- EOF >&2
-usage: ${0##*/} c
+usage: ${0##*/} (c|w)
        ${0##*/} g WSID
        ${0##*/} s WID WSID
 EOF
     exit 1
+}
+
+list_windows() {
+    for f in $(find $DIR/$WS -type f); do
+        echo ${f##*/}
+    done
 }
 
 go_to_workspace() {
@@ -53,6 +59,7 @@ setup
 
 case $* in
     c)              echo $WS                ;;
+    w)              list_windows            ;;
     g\ [0-9]*)      go_to_workspace $2      ;;
     s\ 0x*\ [0-9]*) send_to_workspace $2 $3 ;;
     *)              usage                   ;;
