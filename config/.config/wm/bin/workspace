@@ -39,7 +39,7 @@ send_to_workspace() {
     wattr $1 || return
     test $2 != $WS && mapw -u $1
     rm -f $DIR/$WS/$1
-    true > $DIR/$2/$1
+    echo 0 > $DIR/$2/$1
 }
 
 setup() {
