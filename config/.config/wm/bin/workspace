@@ -5,7 +5,7 @@ if ! pgrep X > /dev/null; then
     exit 1
 fi
 
-DIR=$WM_DIR/workspace
+dir=$WM_DIR/workspace
 
 usage() {
     cat <<- EOF >&2
@@ -17,48 +17,48 @@ EOF
 }
 
 list_windows() {
-    for f in $(find $DIR/$WS -type f); do
+    for f in $(find $dir/$ws -type f); do
         echo ${f##*/}
     done
 }
 
 go_to_workspace() {
-    for f in $(find $DIR/$WS -type f); do
+    for f in $(find $dir/$ws -type f); do
         wattr m ${f##*/}; echo $? > $f
         mapw -u ${f##*/}
     done
 
-    for f in $(find $DIR/$1 -type f); do
+    for f in $(find $dir/$1 -type f); do
         test "$(cat $f)" = 0 && mapw -m ${f##*/}
     done
 
-    echo $1 > $DIR/current
+    echo $1 > $dir/current
 }
 
 send_to_workspace() {
     wattr $1 || return
-    test $2 != $WS && mapw -u $1
-    rm -f $DIR/$WS/$1
-    echo 0 > $DIR/$2/$1
+    test $2 != $ws && mapw -u $1
+    rm -f $dir/$ws/$1
+    echo 0 > $dir/$2/$1
 }
 
 setup() {
     for ws in $(seq $WM_WORKSPACES); do
-        mkdir -p $DIR/$ws
+        mkdir -p $dir/$ws
     done
 
-    for f in $(find $DIR -type f ! -name current); do
+    for f in $(find $dir -type f ! -name current); do
         wattr ${f##*/} || rm -f $f
     done
 
-    test -f $DIR/current || echo 1 > $DIR/current
-    WS=$(cat $DIR/current)
+    test -f $dir/current || echo 1 > $dir/current
+    ws=$(cat $dir/current)
 }
 
 setup
 
 case $* in
-    c)              echo $WS                ;;
+    c)              echo $ws                ;;
     w)              list_windows            ;;
     g\ [0-9]*)      go_to_workspace $2      ;;
     s\ 0x*\ [0-9]*) send_to_workspace $2 $3 ;;

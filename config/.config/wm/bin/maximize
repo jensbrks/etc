@@ -5,11 +5,11 @@ if ! pgrep X > /dev/null; then
     exit 1
 fi
 
-DIR=$WM_DIR/maximize
+dir=$WM_DIR/maximize
 
-R=$(lsw -r)
-SW=$(wattr w $R)
-SH=$(wattr h $R)
+r=$(lsw -r)
+sw=$(wattr w $r)
+sh=$(wattr h $r)
 
 usage() {
     echo "usage: ${0##*/} [-f] WID" >&2
@@ -18,18 +18,20 @@ usage() {
 
 toggle_maximize() {
     wattr $1 || return
-    f=$(find $DIR -name $1)
+    f=$(find $dir -name $1)
 
     case $f in
         '')
-            wattr xywhi $1 > $DIR/$1
+            wattr xywhi $1 > $dir/$1
 
-            w=$((SW - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
-            h=$((SH - BAR_HEIGHT - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
+            w=$((sw - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
+            h=$((sh - BAR_HEIGHT - WM_GAPSIZE*2 - WM_BORDERSIZE*2))
 
-            $BAR_TOP \
-                && wtp $WM_GAPSIZE $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $1 \
-                || wtp $WM_GAPSIZE $WM_GAPSIZE $w $h $1
+            if test -n "$BAR_BOTTOM"; then
+                wtp $WM_GAPSIZE $WM_GAPSIZE $w $h $1
+            else
+                wtp $WM_GAPSIZE $((BAR_HEIGHT + WM_GAPSIZE)) $w $h $1
+            fi
             ;;
         *)
             wtp $(cat $f)
@@ -40,12 +42,12 @@ toggle_maximize() {
 
 toggle_fullscreen() {
     wattr $1 || return
-    f=$(find $DIR -name $1)
+    f=$(find $dir -name $1)
 
     case $f in
         '')
-            wattr xywhi $1 > $DIR/$1
-            wtp -$WM_BORDERSIZE -$WM_BORDERSIZE $SW $SH $1
+            wattr xywhi $1 > $dir/$1
+            wtp -$WM_BORDERSIZE -$WM_BORDERSIZE $sw $sh $1
             ;;
         *)
             wtp $(cat $f)
@@ -55,9 +57,9 @@ toggle_fullscreen() {
 }
 
 setup() {
-    test -d $DIR || mkdir -p $DIR
+    mkdir -p $dir
 
-    for f in $(find $DIR -type f); do
+    for f in $(find $dir -type f); do
         wattr ${f##*/} || rm -f $f
     done
 }
